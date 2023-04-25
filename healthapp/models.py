@@ -18,8 +18,8 @@ class Doctor(models.Model):
 
 class Appointment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    doctor = models = models.ForeignKey(Doctor, on_delete=models.CASCADE)
-    appointment_date = models.DateField()
+    doctor = models.ForeignKey(Doctor, on_delete=models.CASCADE)
+    appointment_date = models.DateField(auto_now_add=True, unique = True)
     appointment_time = models.TimeField()
     is_confirmed = models.BooleanField(default=False)
     symptoms = models.TextField(blank=True)
