@@ -1,9 +1,7 @@
-from django.urls import path, include
-from .views import AppointmentListView
+from django.db import models
 
 
-urlpatterns = [
-    path('', AppointmentListView.as_view(), name="appointment"),
-    
 
-]
+
+
+
