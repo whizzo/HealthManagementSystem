@@ -13,9 +13,9 @@ from django.contrib.auth.hashers import make_password
 class Patient(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
-    # email = models.EmailField()
-    # password = models.CharField(widget=forms.PasswordInput())
-    confirm_password = models.CharField(widget=forms.PasswordInput())
+    email = models.EmailField()
+    password = models.CharField(max_length=50, blank=True, null=True, default="some_value")
+    confirm_password = models.CharField(max_length=50, blank=True, null=True, default="some_value")
     phone_number = models.CharField(max_length=20)
     date_of_birth = models.DateField()
     address = models.CharField(max_length=200)

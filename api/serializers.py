@@ -2,7 +2,10 @@ from rest_framework import serializers, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+from django.contrib.auth import authenticate
+from django.utils.translation import gettext_lazy as _
 from healthapp.models import Patient, Doctor, Appointment, Billing
+from django import forms
 
 
 
@@ -14,6 +17,11 @@ class PatientSerializer(serializers.ModelSerializer):
         model = Patient
         fields = ['first_name', 'last_name', 'email', 'password', 'confirm_password', 'phone_number', 'date_of_birth', 'address']
         extra_kwargs = {'password': {'write_only': True}, 'confirm_password': {'write_only': True}}
+        widgets = {
+            'password': forms.PasswordInput(),
+            'confirm_password': forms.PasswordInput(),
+
+        }
 
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -24,6 +32,27 @@ class PatientSerializer(serializers.ModelSerializer):
         patient.set_password(password)
         patient.save()
         return patient
+    
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        password = attrs.get('password')
+
+        if email and password:
+            patient = authenticate(email=email, password=password)
+            if patient:
+                if not patient.is_active:
+                    msg = _('User account is disabled.')
+                    raise serializers.ValidationError(msg)
+                attrs['patient']= patient
+            else:
+                msg= _("Unable to log in with provided credentials.")
+                raise serializers.ValidationError(msg)
+        else:
+            msg = _('Must include "email" and "password". ')
+            raise serializers.ValidationError(msg)
+        
+        return attrs
     
 
 class PatientViewSet(viewsets.ModelViewSet):
